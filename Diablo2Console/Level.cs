@@ -6,11 +6,7 @@ namespace Diablo2Console
 {
     public class Level
     {
-        public char[,] Map { get; }
-
-        public Level(char[,] map)
-        {
-            Map = map;
-        }
+        public string Name { get; set; }
+        public char[,] Map { get; set; }
     }
 }

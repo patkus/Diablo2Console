@@ -9,6 +9,10 @@ namespace Diablo2Console
         public int PositionX { get; set; }
         public int PositionY { get; set; }
 
+        public Player()
+        {
+
+        }
         public Player(int positionX, int positionY)
         {
             PositionX = positionX;

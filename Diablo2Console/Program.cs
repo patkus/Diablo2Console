@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Diablo2Console
 {
@@ -14,11 +15,18 @@ namespace Diablo2Console
             Console.WriteLine("Select what you want to do:\n");
 
             var mainMenu = actionMenuService.GetAll("Main");
+            Player player = new Player();
+            LevelService levelService = new LevelService();
+            Level currentLevel = new Level();
+
+            actionMenuService.PrintMenu(mainMenu);
+            Console.WriteLine();
 
             while (playing)
             {
-                actionMenuService.PrintMenu(mainMenu);
-                Console.WriteLine();
+                List<int> oldPlayerPosition = new List<int>() { player.PositionX, player.PositionY };
+                List<int> newPlayerPosition = new List<int>() { player.PositionX, player.PositionY };
+
                 var keyOperation = Console.ReadKey(true);
 
                 switch (keyOperation.Key)
@@ -35,10 +43,18 @@ namespace Diablo2Console
                             if (keyOperation.Key == ConsoleKey.D1)
                             {
                                 Console.Clear();
-                                LevelService levelService = new LevelService();
-                                Level firstLevel = new Level(map: new char[10, 20] { { 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x' }, { 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x' }, { 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x' }, { 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x' }, { 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x' }, { 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x' }, { 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x' }, { 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x' }, { 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x' }, { 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x' } });
-                                levelService.DrawLevelInConsole(firstLevel.Map);
-                                keyOperation = Console.ReadKey();
+                                currentLevel.Map = levelService.LoadLevelFromFile("Level1");
+                                levelService.DrawLevelInConsole(currentLevel.Map);
+                                if (currentLevel.Map != null)
+                                {
+                                    var playerPosition = levelService.GetPlayerPosition(currentLevel.Map);
+                                    if (playerPosition.Count > 0)
+                                    {
+                                        player.PositionX = playerPosition[0];
+                                        player.PositionY = playerPosition[1];
+                                    }
+                                }
+                                selectingDifficulty = false;
                             }
                             else if (keyOperation.Key == ConsoleKey.Escape)
                             {
@@ -52,47 +68,28 @@ namespace Diablo2Console
                             }
                         }
                         break;
+                    case ConsoleKey.RightArrow:
+                        newPlayerPosition[1]++;
+                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel.Map, player, actionMenuService);
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        newPlayerPosition[1]--;
+                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel.Map, player, actionMenuService);
+                        break;
+                    case ConsoleKey.UpArrow:
+                        newPlayerPosition[0]--;
+                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel.Map, player, actionMenuService);
+                        break;
+                    case ConsoleKey.DownArrow:
+                        newPlayerPosition[0]++;
+                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel.Map, player, actionMenuService);
+                        break;
                     case ConsoleKey.Escape:
                         playing = false;
                         break;
                     default:
                         Console.WriteLine("Wrong operation, choose another one.");
                         break;
-                }
-                Console.WriteLine();
-            }
-            /*
-            bool playing = true;
-            var player = new Player(1, 1);
-            var levelMap = new char[,] { { 'x', 'x', 'x', 'x', 'x' }, { 'x', 'o', ' ', ' ', 'x' }, { 'x', ' ', ' ', ' ', 'x' }, { 'x', ' ', ' ', ' ', 'x' }, { 'x', 'x', 'x', 'x', 'x' } };
-            DrawMap(levelMap);
-            while (playing)
-            {
-                var action = Console.ReadKey();
-                switch (action.Key)
-                {
-                    case ConsoleKey.RightArrow:
-                        levelMap[player.PositionX, player.PositionY] = ' ';
-                        player.PositionY++;
-                        levelMap[player.PositionX, player.PositionY] = 'o';
-                        break;
-                    case ConsoleKey.Escape:
-                        playing = false;
-                        break;
-                    default:
-                        break;
-                }
-                Console.Clear();
-                DrawMap(levelMap);
-            }*/
-        }
-        public static void DrawMap(char[,] levelMap)
-        {
-            for (int i = 0; i <= levelMap.GetLength(0) - 1; i++)
-            {
-                for (int j = 0; j <= levelMap.GetLength(1) - 1; j++)
-                {
-                    Console.Write(levelMap[i, j]);
                 }
                 Console.WriteLine();
             }
