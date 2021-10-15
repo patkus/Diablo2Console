@@ -18,5 +18,7 @@ namespace Diablo2Console
             PositionX = positionX;
             PositionY = positionY;
         }
+
+        public char[,] PlayerMap { get; set; }
     }
 }

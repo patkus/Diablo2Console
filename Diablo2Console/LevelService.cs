@@ -7,18 +7,6 @@ namespace Diablo2Console
 {
     public class LevelService
     {
-        public void DrawLevelInConsole(char[,] levelMap)
-        {
-            for (int i = 0; i < levelMap.GetLength(0); i++)
-            {
-                for (int j = 0; j < levelMap.GetLength(1); j++)
-                {
-                    Console.Write(levelMap[i, j]);
-                }
-                Console.WriteLine();
-            }
-        }
-
         public char[,] LoadLevelFromFile(string levelName)
         {
             string filePath = $"../../../files/{levelName}.txt";
@@ -69,15 +57,15 @@ namespace Diablo2Console
             return resultArray;
         }
 
-        public List<int> GetPlayerPosition(char[,] levelMap)
+        public List<int> GetPlayerPosition(Level level)
         {
             List<int> playerPosition = new List<int>();
 
-            for (int i = 0; i < levelMap.GetLength(0); i++)
+            for (int i = 0; i < level.Map.GetLength(0); i++)
             {
-                for (int j = 0; j < levelMap.GetLength(1); j++)
+                for (int j = 0; j < level.Map.GetLength(1); j++)
                 {
-                    if (levelMap[i, j] == 'P')
+                    if (level.Map[i, j] == 'P')
                     {
                         playerPosition.Add(i);
                         playerPosition.Add(j);
@@ -88,25 +76,34 @@ namespace Diablo2Console
             return playerPosition;
         }
 
-        public void ChangePlayerPosition(List<int> oldPlayerPosition, List<int> newPlayerPosition, char[,] levelMap, Player player, ActionMenuService actionMenuService)
+        public void ChangePlayerPosition(List<int> oldPlayerPosition, List<int> newPlayerPosition, Level level, Player player, ActionMenuService actionMenuService)
         {
-            var charInNewPosition = levelMap[newPlayerPosition[0], newPlayerPosition[1]];
+            var charInNewPosition = level.Map[newPlayerPosition[0], newPlayerPosition[1]];
             if (charInNewPosition == ' ')
             {
-                levelMap[newPlayerPosition[0], newPlayerPosition[1]] = 'P';
-                levelMap[oldPlayerPosition[0], oldPlayerPosition[1]] = ' ';
+                level.Map[newPlayerPosition[0], newPlayerPosition[1]] = 'P';
+                level.Map[oldPlayerPosition[0], oldPlayerPosition[1]] = ' ';
 
                 player.PositionX = newPlayerPosition[0];
                 player.PositionY = newPlayerPosition[1];
             }
-            else if(charInNewPosition != 'x')
+            else if (charInNewPosition != 'x')
             {
                 Smith smith = new Smith(actionMenuService);
             }
 
             Console.Clear();
-            DrawLevelInConsole(levelMap);
-
+            player.PlayerMap[player.PositionX, player.PositionY] = 'P';
+            for(int i = player.PositionX - 1; i <= player.PositionX + 1; i++)
+            {
+                for (int j = player.PositionY - 1; j <= player.PositionY + 1; j++)
+                {
+                    if ((i, j) != (player.PositionX, player.PositionY))
+                    {
+                        player.PlayerMap[i, j] = level.Map[i, j];
+                    }
+                }
+            }
         }
     }
 }

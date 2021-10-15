@@ -15,6 +15,7 @@ namespace Diablo2Console
             Console.WriteLine("Select what you want to do:\n");
 
             var mainMenu = actionMenuService.GetAll("Main");
+            PlayerService playerService = new PlayerService();
             Player player = new Player();
             LevelService levelService = new LevelService();
             Level currentLevel = new Level();
@@ -44,14 +45,16 @@ namespace Diablo2Console
                             {
                                 Console.Clear();
                                 currentLevel.Map = levelService.LoadLevelFromFile("Level1");
-                                levelService.DrawLevelInConsole(currentLevel.Map);
                                 if (currentLevel.Map != null)
                                 {
-                                    var playerPosition = levelService.GetPlayerPosition(currentLevel.Map);
+                                    var playerPosition = levelService.GetPlayerPosition(currentLevel);
                                     if (playerPosition.Count > 0)
                                     {
                                         player.PositionX = playerPosition[0];
                                         player.PositionY = playerPosition[1];
+
+                                        player.PlayerMap = playerService.SetStartingMapForPlayer(currentLevel, player);
+                                        playerService.DrawPlayerMap(player);
                                     }
                                 }
                                 selectingDifficulty = false;
@@ -70,19 +73,23 @@ namespace Diablo2Console
                         break;
                     case ConsoleKey.RightArrow:
                         newPlayerPosition[1]++;
-                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel.Map, player, actionMenuService);
+                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
+                        playerService.DrawPlayerMap(player);
                         break;
                     case ConsoleKey.LeftArrow:
                         newPlayerPosition[1]--;
-                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel.Map, player, actionMenuService);
+                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
+                        playerService.DrawPlayerMap(player);
                         break;
                     case ConsoleKey.UpArrow:
                         newPlayerPosition[0]--;
-                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel.Map, player, actionMenuService);
+                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
+                        playerService.DrawPlayerMap(player);
                         break;
                     case ConsoleKey.DownArrow:
                         newPlayerPosition[0]++;
-                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel.Map, player, actionMenuService);
+                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
+                        playerService.DrawPlayerMap(player);
                         break;
                     case ConsoleKey.Escape:
                         playing = false;
