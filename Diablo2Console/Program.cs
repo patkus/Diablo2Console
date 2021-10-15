@@ -74,22 +74,18 @@ namespace Diablo2Console
                     case ConsoleKey.RightArrow:
                         newPlayerPosition[1]++;
                         levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
-                        playerService.DrawPlayerMap(player);
                         break;
                     case ConsoleKey.LeftArrow:
                         newPlayerPosition[1]--;
                         levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
-                        playerService.DrawPlayerMap(player);
                         break;
                     case ConsoleKey.UpArrow:
                         newPlayerPosition[0]--;
                         levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
-                        playerService.DrawPlayerMap(player);
                         break;
                     case ConsoleKey.DownArrow:
                         newPlayerPosition[0]++;
                         levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
-                        playerService.DrawPlayerMap(player);
                         break;
                     case ConsoleKey.Escape:
                         playing = false;
@@ -111,6 +107,9 @@ namespace Diablo2Console
             actionMenuService.AddNewActionMenu(ConsoleKey.D2, "Nightmare", "Difficulty");
             actionMenuService.AddNewActionMenu(ConsoleKey.D3, "Hell", "Difficulty");
             actionMenuService.AddNewActionMenu(ConsoleKey.Escape, "Previous", "Difficulty");
+            actionMenuService.AddNewActionMenu(ConsoleKey.C, "Chat", "Smith");
+            actionMenuService.AddNewActionMenu(ConsoleKey.R, "Repair", "Smith");
+            actionMenuService.AddNewActionMenu(ConsoleKey.Escape, "Good bye", "Smith");
         }
     }
 }

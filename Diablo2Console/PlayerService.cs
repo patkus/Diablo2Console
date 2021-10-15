@@ -45,5 +45,20 @@ namespace Diablo2Console
 
             return playerMap;
         }
+
+        public void UpdatePlayersMap(Player player, Level level)
+        {
+            player.PlayerMap[player.PositionX, player.PositionY] = 'P';
+            for (int i = player.PositionX - 1; i <= player.PositionX + 1; i++)
+            {
+                for (int j = player.PositionY - 1; j <= player.PositionY + 1; j++)
+                {
+                    if ((i, j) != (player.PositionX, player.PositionY))
+                    {
+                        player.PlayerMap[i, j] = level.Map[i, j];
+                    }
+                }
+            }
+        }
     }
 }

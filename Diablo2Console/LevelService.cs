@@ -78,6 +78,8 @@ namespace Diablo2Console
 
         public void ChangePlayerPosition(List<int> oldPlayerPosition, List<int> newPlayerPosition, Level level, Player player, ActionMenuService actionMenuService)
         {
+            Console.Clear();
+            PlayerService playerService = new PlayerService();
             var charInNewPosition = level.Map[newPlayerPosition[0], newPlayerPosition[1]];
             if (charInNewPosition == ' ')
             {
@@ -86,23 +88,47 @@ namespace Diablo2Console
 
                 player.PositionX = newPlayerPosition[0];
                 player.PositionY = newPlayerPosition[1];
+              
+                playerService.UpdatePlayersMap(player, level);
+                playerService.DrawPlayerMap(player);
             }
-            else if (charInNewPosition != 'x')
+            else if (charInNewPosition == 's')
             {
-                Smith smith = new Smith(actionMenuService);
-            }
+                playerService.UpdatePlayersMap(player, level);
+                playerService.DrawPlayerMap(player);
 
-            Console.Clear();
-            player.PlayerMap[player.PositionX, player.PositionY] = 'P';
-            for(int i = player.PositionX - 1; i <= player.PositionX + 1; i++)
-            {
-                for (int j = player.PositionY - 1; j <= player.PositionY + 1; j++)
+                Smith smith = new Smith();
+                Console.WriteLine(smith.Name);
+                actionMenuService.PrintMenu(actionMenuService.GetAll("Smith"));
+                var keyOperation = Console.ReadKey(true);
+                bool selecting = true;
+                while(selecting)
                 {
-                    if ((i, j) != (player.PositionX, player.PositionY))
+                    switch (keyOperation.Key)
                     {
-                        player.PlayerMap[i, j] = level.Map[i, j];
+                        case ConsoleKey.R:
+                            Console.WriteLine(smith.SpokenLines["Repair"]);
+                            keyOperation = Console.ReadKey(true);
+                            break;
+                        case ConsoleKey.C:
+                            Console.WriteLine(smith.SpokenLines["Chat"]);
+                            keyOperation = Console.ReadKey(true);
+                            break;
+                        case ConsoleKey.Escape:
+                            Console.WriteLine(smith.SpokenLines["GoodBye"]);
+                            selecting = false;
+                            break;
+                        default:
+                            Console.WriteLine("Wrong operation, choose another one.");
+                            keyOperation = Console.ReadKey(true);
+                            break;
                     }
                 }
+            }
+            else
+            {
+                playerService.UpdatePlayersMap(player, level);
+                playerService.DrawPlayerMap(player);
             }
         }
     }
