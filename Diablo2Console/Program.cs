@@ -1,5 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Diablo2Console.App.Concrete;
+using Diablo2Console.App.Managers;
+using Diablo2Console.Domain.Entity;
+using System;
 
 namespace Diablo2Console
 {
@@ -9,31 +11,36 @@ namespace Diablo2Console
         {
             bool playing = true;
             ActionMenuService actionMenuService = new ActionMenuService();
-            Initialize(actionMenuService);
 
             Console.WriteLine("Welcome in the Diablo II Console world!\n");
             Console.WriteLine("Select what you want to do:\n");
 
-            var mainMenu = actionMenuService.GetAll("Main");
+            var mainMenu = actionMenuService.GetMenuActionByGroup("Main");
             PlayerService playerService = new PlayerService();
             Player player = new Player();
-            LevelService levelService = new LevelService();
-            Level currentLevel = new Level();
+            playerService.CreateItem(player);
 
             actionMenuService.PrintMenu(mainMenu);
             Console.WriteLine();
 
+            int oldPlayerPositionX;
+            int oldPlayerPositionY;
+
+            LevelService levelService = new LevelService();
+            LevelManager levelManager = new LevelManager(levelService);
+            PlayerManager playerManager = new PlayerManager(playerService, levelService, actionMenuService);
+
             while (playing)
             {
-                List<int> oldPlayerPosition = new List<int>() { player.PositionX, player.PositionY };
-                List<int> newPlayerPosition = new List<int>() { player.PositionX, player.PositionY };
-
                 var keyOperation = Console.ReadKey(true);
+
+                oldPlayerPositionX = player.PositionX;
+                oldPlayerPositionY = player.PositionY;
 
                 switch (keyOperation.Key)
                 {
                     case ConsoleKey.Enter:
-                        var difficultyMenu = actionMenuService.GetAll("Difficulty");
+                        var difficultyMenu = actionMenuService.GetMenuActionByGroup("Difficulty");
                         actionMenuService.PrintMenu(difficultyMenu);
                         keyOperation = Console.ReadKey(true);
 
@@ -44,17 +51,17 @@ namespace Diablo2Console
                             if (keyOperation.Key == ConsoleKey.D1)
                             {
                                 Console.Clear();
-                                currentLevel.Map = levelService.LoadLevelFromFile("Level1");
-                                if (currentLevel.Map != null)
+                                var newLevelId = levelManager.AddNewLevel("Level1");
+                                if (newLevelId != -1)
                                 {
-                                    var playerPosition = levelService.GetPlayerPosition(currentLevel);
+                                    var playerPosition = levelManager.GetPlayerPosition();
                                     if (playerPosition.Count > 0)
                                     {
                                         player.PositionX = playerPosition[0];
                                         player.PositionY = playerPosition[1];
-
-                                        player.PlayerMap = playerService.SetStartingMapForPlayer(currentLevel, player);
-                                        playerService.DrawPlayerMap(player);
+                                       
+                                        playerManager.SetStartingMapForPlayer();
+                                        playerManager.DrawPlayerMap();
                                     }
                                 }
                                 selectingDifficulty = false;
@@ -72,20 +79,16 @@ namespace Diablo2Console
                         }
                         break;
                     case ConsoleKey.RightArrow:
-                        newPlayerPosition[1]++;
-                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
+                        playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, oldPlayerPositionX, ++oldPlayerPositionY);
                         break;
                     case ConsoleKey.LeftArrow:
-                        newPlayerPosition[1]--;
-                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
+                        playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, oldPlayerPositionX, --oldPlayerPositionY);
                         break;
                     case ConsoleKey.UpArrow:
-                        newPlayerPosition[0]--;
-                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
+                        playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, --oldPlayerPositionX, oldPlayerPositionY);
                         break;
                     case ConsoleKey.DownArrow:
-                        newPlayerPosition[0]++;
-                        levelService.ChangePlayerPosition(oldPlayerPosition, newPlayerPosition, currentLevel, player, actionMenuService);
+                        playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, ++oldPlayerPositionX, oldPlayerPositionY);
                         break;
                     case ConsoleKey.Escape:
                         playing = false;
@@ -96,20 +99,6 @@ namespace Diablo2Console
                 }
                 Console.WriteLine();
             }
-        }
-
-        public static void Initialize(ActionMenuService actionMenuService)
-        {
-            actionMenuService.AddNewActionMenu(ConsoleKey.Enter, "Start game", "Main");
-            actionMenuService.AddNewActionMenu(ConsoleKey.S, "Top scores", "Main");
-            actionMenuService.AddNewActionMenu(ConsoleKey.Escape, "Exit", "Main");
-            actionMenuService.AddNewActionMenu(ConsoleKey.D1, "Normal", "Difficulty");
-            actionMenuService.AddNewActionMenu(ConsoleKey.D2, "Nightmare", "Difficulty");
-            actionMenuService.AddNewActionMenu(ConsoleKey.D3, "Hell", "Difficulty");
-            actionMenuService.AddNewActionMenu(ConsoleKey.Escape, "Previous", "Difficulty");
-            actionMenuService.AddNewActionMenu(ConsoleKey.C, "Chat", "Smith");
-            actionMenuService.AddNewActionMenu(ConsoleKey.R, "Repair", "Smith");
-            actionMenuService.AddNewActionMenu(ConsoleKey.Escape, "Good bye", "Smith");
         }
     }
 }

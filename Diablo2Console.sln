@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diablo2Console", "Diablo2Console\Diablo2Console.csproj", "{DD9C5420-775E-477F-86EA-C668EC9754E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diablo2Console", "Diablo2Console\Diablo2Console.csproj", "{DD9C5420-775E-477F-86EA-C668EC9754E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diablo2Console.App", "Diablo2Console.App\Diablo2Console.App.csproj", "{97BEF937-7D76-415F-B8D7-9100C1A43078}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diablo2Console.Domain", "Diablo2Console.Domain\Diablo2Console.Domain.csproj", "{76FFA9C7-BF97-41F3-A81A-02132D03EAA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{DD9C5420-775E-477F-86EA-C668EC9754E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD9C5420-775E-477F-86EA-C668EC9754E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD9C5420-775E-477F-86EA-C668EC9754E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97BEF937-7D76-415F-B8D7-9100C1A43078}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97BEF937-7D76-415F-B8D7-9100C1A43078}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97BEF937-7D76-415F-B8D7-9100C1A43078}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97BEF937-7D76-415F-B8D7-9100C1A43078}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76FFA9C7-BF97-41F3-A81A-02132D03EAA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76FFA9C7-BF97-41F3-A81A-02132D03EAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76FFA9C7-BF97-41F3-A81A-02132D03EAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76FFA9C7-BF97-41F3-A81A-02132D03EAA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

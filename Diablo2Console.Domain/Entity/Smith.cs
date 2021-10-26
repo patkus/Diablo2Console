@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Diablo2Console.Domain.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Diablo2Console
+namespace Diablo2Console.Domain.Entity
 {
-    public class Smith
+    public class Smith : BaseEntity
     {
-        public readonly string Name = "Charsie";
+        public string Name = "Charsie";
 
-        public readonly Dictionary<string, string> SpokenLines = new Dictionary<string, string>()
+        public Dictionary<string, string> SpokenLines = new Dictionary<string, string>()
         {
             { "Chat",
             @"Hi there. I'm Charsi, the Blacksmith here in camp. It's good to see some strong adventurers around here.
