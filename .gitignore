@@ -1,0 +1,8 @@
+﻿Diablo2Console/bin/Debug
+Diablo2Console/obj/Debug
+Diablo2Console/obj
+.vs
+Diablo2Console.App/bin
+Diablo2Console.Domain/bin
+Diablo2Console.Domain/obj
+Diablo2Console.App/obj
