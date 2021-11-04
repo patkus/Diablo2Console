@@ -32,7 +32,7 @@ namespace Diablo2Console.App.Common
         {
             return Items;
         }
-        public int CreateItem(T item)
+        public virtual int CreateItem(T item)
         {
             Items.Add(item);
 

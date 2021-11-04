@@ -50,7 +50,6 @@ namespace Diablo2Console
                         {
                             if (keyOperation.Key == ConsoleKey.D1)
                             {
-                                Console.Clear();
                                 var newLevelId = levelManager.AddNewLevel("Level1");
                                 if (newLevelId != -1)
                                 {

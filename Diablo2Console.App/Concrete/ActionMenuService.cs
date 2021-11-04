@@ -40,9 +40,6 @@ namespace Diablo2Console.App.Concrete
             CreateItem(new ActionMenu(ConsoleKey.D2, "Nightmare", "Difficulty"));
             CreateItem(new ActionMenu(ConsoleKey.D3, "Hell", "Difficulty"));
             CreateItem(new ActionMenu(ConsoleKey.Escape, "Previous", "Difficulty"));
-            CreateItem(new ActionMenu(ConsoleKey.C, "Chat", "Smith"));
-            CreateItem(new ActionMenu(ConsoleKey.R, "Repair", "Smith"));
-            CreateItem(new ActionMenu(ConsoleKey.Escape, "Good bye", "Smith"));
         }
     }
 }

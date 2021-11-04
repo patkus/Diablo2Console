@@ -10,15 +10,18 @@ namespace Diablo2Console.App.Managers
         private PlayerService _playerService;
         private LevelService _levelService;
         private ActionMenuService _actionMenuService;
+        private SmithService _smithService;
 
         public PlayerManager(PlayerService playerService, LevelService levelService, ActionMenuService actionMenuService)
         {
             _playerService = playerService;
             _levelService = levelService;
             _actionMenuService = actionMenuService;
+            _smithService = new SmithService(_actionMenuService);
         }
         public void DrawPlayerMap()
         {
+            Console.Clear();
             var player = _playerService.GetAllItems().FirstOrDefault();
             for (int i = 0; i < player.PlayerMap.GetLength(0); i++)
             {
@@ -79,8 +82,6 @@ namespace Diablo2Console.App.Managers
         }
         public void ChangePlayerPosition(int oldPlayerPositionX, int oldPlayerPositionY, int newPlayerPositionX, int newPlayerPositionY)
         {
-            Console.Clear();
-
             var player = _playerService.GetAllItems().FirstOrDefault();
             var level = _levelService.GetAllItems().FirstOrDefault(x => x.CurrentlyPlaying == true);
 
@@ -97,13 +98,22 @@ namespace Diablo2Console.App.Managers
                 DrawPlayerMap();
             }
             else if (charInNewPosition == 's')
-            {
-                UpdatePlayersMap();
-                DrawPlayerMap();
+            {              
+                var smith = _smithService.GetAllItems().Where(x => x.Name == "Charsie").FirstOrDefault();
+                if(smith == null)
+                {
+                    if (_levelService.GetAllItems().Where(x => x.CurrentlyPlaying == true).FirstOrDefault().Name == "Level1")
+                    {
+                        if (_smithService.GetAllItems().Where(x => x.Name == "Charsie").Any())
+                        {
 
-                Smith smith = new Smith();
+                        }
+                    }
+                    smith = new Smith("Charsie");
+                    _smithService.CreateItem(smith);
+                }
                 Console.WriteLine(smith.Name);
-                _actionMenuService.PrintMenu(_actionMenuService.GetMenuActionByGroup("Smith"));
+                _actionMenuService.PrintMenu(_actionMenuService.GetMenuActionByGroup(smith.Name));
                 var keyOperation = Console.ReadKey(true);
                 bool selecting = true;
                 while (selecting)
@@ -128,6 +138,9 @@ namespace Diablo2Console.App.Managers
                             break;
                     }
                 }
+
+                UpdatePlayersMap();
+                DrawPlayerMap();
             }
             else
             {
