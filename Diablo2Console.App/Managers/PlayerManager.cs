@@ -10,14 +10,21 @@ namespace Diablo2Console.App.Managers
         private PlayerService _playerService;
         private LevelService _levelService;
         private ActionMenuService _actionMenuService;
-        private SmithService _smithService;
+        private NpcService _npcService;
+        private QuestService _questService;
+        private TaskService _taskService;
+        private TaskFunctionService _taskFunctionService;
 
         public PlayerManager(PlayerService playerService, LevelService levelService, ActionMenuService actionMenuService)
         {
             _playerService = playerService;
             _levelService = levelService;
             _actionMenuService = actionMenuService;
-            _smithService = new SmithService(_actionMenuService);
+            _npcService = new NpcService(_actionMenuService);
+            _questService = new QuestService(levelService);
+            _taskService = new TaskService(_questService);
+            _taskFunctionService = new TaskFunctionService(_taskService);
+
         }
         public void DrawPlayerMap()
         {
@@ -98,19 +105,18 @@ namespace Diablo2Console.App.Managers
                 DrawPlayerMap();
             }
             else if (charInNewPosition == 's')
-            {              
-                var smith = _smithService.GetAllItems().Where(x => x.Name == "Charsie").FirstOrDefault();
+            {
+                var currentLevel = _levelService.GetAllItems().Where(x => x.CurrentlyPlaying == true).FirstOrDefault();
+                var smith = _npcService.GetAllItems().Where(x => x.Type == "Smith" && x.LevelId == currentLevel.Id).FirstOrDefault();
                 if(smith == null)
                 {
-                    if (_levelService.GetAllItems().Where(x => x.CurrentlyPlaying == true).FirstOrDefault().Name == "Level1")
+                    string smithName = "";
+                    if(currentLevel.Name == "Level1")
                     {
-                        if (_smithService.GetAllItems().Where(x => x.Name == "Charsie").Any())
-                        {
-
-                        }
+                        smithName = "Charsie";
                     }
-                    smith = new Smith("Charsie");
-                    _smithService.CreateItem(smith);
+                    smith = new Npc(_npcService.GetNextId(), smithName, "Smith", currentLevel.Id);
+                    _npcService.CreateItem(smith);
                 }
                 Console.WriteLine(smith.Name);
                 _actionMenuService.PrintMenu(_actionMenuService.GetMenuActionByGroup(smith.Name));
@@ -136,6 +142,72 @@ namespace Diablo2Console.App.Managers
                             Console.WriteLine("Wrong operation, choose another one.");
                             keyOperation = Console.ReadKey(true);
                             break;
+                    }
+                }
+            }
+            else if(charInNewPosition == 'h')
+            {
+                var currentLevel = _levelService.GetAllItems().Where(x => x.CurrentlyPlaying == true).FirstOrDefault();
+                var healer = _npcService.GetAllItems().Where(x => x.Type == "Healer" && x.LevelId == currentLevel.Id).FirstOrDefault();
+                if (healer == null)
+                {
+                    string healerName = "";
+                    if (currentLevel.Name == "Level1")
+                    {
+                        healerName = "Akara";
+                    }
+                    healer = new Npc(_npcService.GetNextId(), healerName, "Healer", currentLevel.Id);
+                    _npcService.CreateItem(healer);
+                }
+
+                //The Den of Evil - Task1
+                var theDenOfEvilFinished = _questService.GetAllItems().Where(x => x.Name == "The Den of Evil").FirstOrDefault();
+                if (!theDenOfEvilFinished.Finished)
+                {
+                    var activeTask = _taskService.GetAllItems().Where(x => x.QuestId == theDenOfEvilFinished.Id && x.Active == true).FirstOrDefault();
+                    if (activeTask != null)
+                    {
+                        _taskFunctionService.SpeakToAkara();
+                        Console.WriteLine(healer.SpokenLines[activeTask.Name]);
+                        Console.WriteLine("Enter - Continue playing");
+
+                        bool readingTask = true;
+                        while(readingTask)
+                        {
+                            if(Console.ReadKey().Key == ConsoleKey.Enter)
+                            {
+                                readingTask = false;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine(healer.Name);
+                    _actionMenuService.PrintMenu(_actionMenuService.GetMenuActionByGroup(healer.Name));
+                    var keyOperation = Console.ReadKey(true);
+                    bool selecting = true;
+                    while (selecting)
+                    {
+                        switch (keyOperation.Key)
+                        {
+                            case ConsoleKey.H:
+                                Console.WriteLine(healer.SpokenLines["Heal"]);
+                                keyOperation = Console.ReadKey(true);
+                                break;
+                            case ConsoleKey.C:
+                                Console.WriteLine(healer.SpokenLines["Chat"]);
+                                keyOperation = Console.ReadKey(true);
+                                break;
+                            case ConsoleKey.Escape:
+                                Console.WriteLine(healer.SpokenLines["GoodBye"]);
+                                selecting = false;
+                                break;
+                            default:
+                                Console.WriteLine("Wrong operation, choose another one.");
+                                keyOperation = Console.ReadKey(true);
+                                break;
+                        }
                     }
                 }
 

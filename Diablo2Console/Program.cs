@@ -10,32 +10,28 @@ namespace Diablo2Console
         public static void Main(string[] args)
         {
             bool playing = true;
-            ActionMenuService actionMenuService = new ActionMenuService();
-
+           
             Console.WriteLine("Welcome in the Diablo II Console world!\n");
             Console.WriteLine("Select what you want to do:\n");
 
-            var mainMenu = actionMenuService.GetMenuActionByGroup("Main");
-            PlayerService playerService = new PlayerService();
-            Player player = new Player();
-            playerService.CreateItem(player);
-
-            actionMenuService.PrintMenu(mainMenu);
-            Console.WriteLine();
-
-            int oldPlayerPositionX;
-            int oldPlayerPositionY;
-
-            LevelService levelService = new LevelService();
-            LevelManager levelManager = new LevelManager(levelService);
-            PlayerManager playerManager = new PlayerManager(playerService, levelService, actionMenuService);
-
             while (playing)
             {
-                var keyOperation = Console.ReadKey(true);
+                ActionMenuService actionMenuService = new ActionMenuService();
+                var mainMenu = actionMenuService.GetMenuActionByGroup("Main");
+                PlayerService playerService = new PlayerService();
+                Player player = new Player();
+                playerService.CreateItem(player);
 
-                oldPlayerPositionX = player.PositionX;
-                oldPlayerPositionY = player.PositionY;
+                actionMenuService.PrintMenu(mainMenu);
+                Console.WriteLine();
+
+                int oldPlayerPositionX;
+                int oldPlayerPositionY;
+
+                LevelService levelService = new LevelService();
+                LevelManager levelManager = new LevelManager(levelService);
+
+                var keyOperation = Console.ReadKey(true);
 
                 switch (keyOperation.Key)
                 {
@@ -51,6 +47,8 @@ namespace Diablo2Console
                             if (keyOperation.Key == ConsoleKey.D1)
                             {
                                 var newLevelId = levelManager.AddNewLevel("Level1");
+                                PlayerManager playerManager = new PlayerManager(playerService, levelService, actionMenuService);
+
                                 if (newLevelId != -1)
                                 {
                                     var playerPosition = levelManager.GetPlayerPosition();
@@ -64,6 +62,40 @@ namespace Diablo2Console
                                     }
                                 }
                                 selectingDifficulty = false;
+
+                                bool playingLevel = true;
+                                keyOperation = Console.ReadKey(true);
+
+                                while(playingLevel)
+                                {
+                                    keyOperation = Console.ReadKey(true);
+
+                                    oldPlayerPositionX = player.PositionX;
+                                    oldPlayerPositionY = player.PositionY;
+
+                                    switch (keyOperation.Key)
+                                    {
+                                        case ConsoleKey.RightArrow:
+                                            playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, oldPlayerPositionX, ++oldPlayerPositionY);
+                                            break;
+                                        case ConsoleKey.LeftArrow:
+                                            playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, oldPlayerPositionX, --oldPlayerPositionY);
+                                            break;
+                                        case ConsoleKey.UpArrow:
+                                            playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, --oldPlayerPositionX, oldPlayerPositionY);
+                                            break;
+                                        case ConsoleKey.DownArrow:
+                                            playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, ++oldPlayerPositionX, oldPlayerPositionY);
+                                            break;
+                                        case ConsoleKey.Escape:
+                                            playingLevel = false;
+                                            Console.Clear();
+                                            break;
+                                        default:
+                                            Console.WriteLine("Wrong operation, choose another one.");
+                                            break;
+                                    }
+                                }
                             }
                             else if (keyOperation.Key == ConsoleKey.Escape)
                             {
@@ -77,18 +109,6 @@ namespace Diablo2Console
                             }
                         }
                         break;
-                    case ConsoleKey.RightArrow:
-                        playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, oldPlayerPositionX, ++oldPlayerPositionY);
-                        break;
-                    case ConsoleKey.LeftArrow:
-                        playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, oldPlayerPositionX, --oldPlayerPositionY);
-                        break;
-                    case ConsoleKey.UpArrow:
-                        playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, --oldPlayerPositionX, oldPlayerPositionY);
-                        break;
-                    case ConsoleKey.DownArrow:
-                        playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, ++oldPlayerPositionX, oldPlayerPositionY);
-                        break;
                     case ConsoleKey.Escape:
                         playing = false;
                         break;
@@ -96,7 +116,6 @@ namespace Diablo2Console
                         Console.WriteLine("Wrong operation, choose another one.");
                         break;
                 }
-                Console.WriteLine();
             }
         }
     }
