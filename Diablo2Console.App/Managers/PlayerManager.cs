@@ -220,5 +220,21 @@ namespace Diablo2Console.App.Managers
                 DrawPlayerMap();
             }
         }
+
+
+        public void ShowPlayerBag()
+        {
+            var player = _playerService.GetAllItems().FirstOrDefault();
+
+            Console.WriteLine();
+            foreach (var item in player.PlayerBag)
+            {
+                Console.WriteLine("Bag: ");
+                Console.WriteLine();
+                item.ShowItem();              
+            }
+            Console.WriteLine();
+            _actionMenuService.PrintMenu(_actionMenuService.GetMenuActionByGroup("PlayerBag"));
+        }
     }
 }

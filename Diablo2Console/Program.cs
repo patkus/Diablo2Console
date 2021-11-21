@@ -18,7 +18,8 @@ namespace Diablo2Console
             {
                 ActionMenuService actionMenuService = new ActionMenuService();
                 var mainMenu = actionMenuService.GetMenuActionByGroup("Main");
-                PlayerService playerService = new PlayerService();
+                ItemService itemService = new ItemService();
+                PlayerService playerService = new PlayerService(itemService);
                 Player player = new Player();
                 playerService.CreateItem(player);
 
@@ -64,7 +65,6 @@ namespace Diablo2Console
                                 selectingDifficulty = false;
 
                                 bool playingLevel = true;
-                                keyOperation = Console.ReadKey(true);
 
                                 while(playingLevel)
                                 {
@@ -86,6 +86,28 @@ namespace Diablo2Console
                                             break;
                                         case ConsoleKey.DownArrow:
                                             playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, ++oldPlayerPositionX, oldPlayerPositionY);
+                                            break;
+                                        case ConsoleKey.I:
+                                            playerManager.ShowPlayerBag();
+                                            
+                                            bool showingPlayerBag = true;
+
+                                            while(showingPlayerBag)
+                                            {
+                                                keyOperation = Console.ReadKey(true);
+
+                                                switch(keyOperation.Key)
+                                                {
+                                                    case ConsoleKey.Escape:
+                                                        Console.Clear();
+                                                        showingPlayerBag = false;
+                                                        playerManager.DrawPlayerMap();
+                                                        break;
+                                                    default:
+                                                        Console.WriteLine("Wrong operation, choose another one.");
+                                                        break;
+                                                }
+                                            }
                                             break;
                                         case ConsoleKey.Escape:
                                             playingLevel = false;
