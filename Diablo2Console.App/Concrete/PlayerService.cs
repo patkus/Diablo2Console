@@ -6,6 +6,7 @@ namespace Diablo2Console.App.Concrete
 {
     public class PlayerService : BaseService<Player>
     {
+        public static int PlayerBasicHealth = 50;
         private ItemService _itemService { get; set; }
         public PlayerService(ItemService itemService)
         {

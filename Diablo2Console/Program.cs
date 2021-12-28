@@ -19,8 +19,9 @@ namespace Diablo2Console
                 ActionMenuService actionMenuService = new ActionMenuService();
                 var mainMenu = actionMenuService.GetMenuActionByGroup("Main");
                 ItemService itemService = new ItemService();
+                MonsterService monsterService = new MonsterService();
                 PlayerService playerService = new PlayerService(itemService);
-                Player player = new Player();
+                Player player = new Player(PlayerService.PlayerBasicHealth);
                 playerService.CreateItem(player);
 
                 actionMenuService.PrintMenu(mainMenu);
@@ -48,11 +49,11 @@ namespace Diablo2Console
                             if (keyOperation.Key == ConsoleKey.D1)
                             {
                                 var newLevelId = levelManager.AddNewLevel("Level1");
-                                PlayerManager playerManager = new PlayerManager(playerService, levelService, actionMenuService);
+                                PlayerManager playerManager = new PlayerManager(playerService, levelService, actionMenuService, monsterService);
 
                                 if (newLevelId != -1)
                                 {
-                                    var playerPosition = levelManager.GetPlayerPosition();
+                                    var playerPosition = levelService.GetPlayerPosition();
                                     if (playerPosition.Count > 0)
                                     {
                                         player.PositionX = playerPosition[0];

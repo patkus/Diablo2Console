@@ -14,8 +14,9 @@ namespace Diablo2Console.App.Managers
         private QuestService _questService;
         private TaskService _taskService;
         private TaskFunctionService _taskFunctionService;
+        private MonsterService _monsterService;
 
-        public PlayerManager(PlayerService playerService, LevelService levelService, ActionMenuService actionMenuService)
+        public PlayerManager(PlayerService playerService, LevelService levelService, ActionMenuService actionMenuService, MonsterService monsterService)
         {
             _playerService = playerService;
             _levelService = levelService;
@@ -24,6 +25,7 @@ namespace Diablo2Console.App.Managers
             _questService = new QuestService(levelService);
             _taskService = new TaskService(_questService);
             _taskFunctionService = new TaskFunctionService(_taskService);
+            _monsterService = monsterService;
 
         }
         public void DrawPlayerMap()
@@ -106,16 +108,15 @@ namespace Diablo2Console.App.Managers
             }
             else if (charInNewPosition == 's')
             {
-                var currentLevel = _levelService.GetAllItems().Where(x => x.CurrentlyPlaying == true).FirstOrDefault();
-                var smith = _npcService.GetAllItems().Where(x => x.Type == "Smith" && x.LevelId == currentLevel.Id).FirstOrDefault();
-                if(smith == null)
+                var smith = _npcService.GetAllItems().Where(x => x.Type == "Smith" && x.LevelId == level.Id).FirstOrDefault();
+                if (smith == null)
                 {
                     string smithName = "";
-                    if(currentLevel.Name == "Level1")
+                    if (level.Name == "Level1")
                     {
                         smithName = "Charsie";
                     }
-                    smith = new Npc(_npcService.GetNextId(), smithName, "Smith", currentLevel.Id);
+                    smith = new Npc(_npcService.GetNextId(), smithName, "Smith", level.Id);
                     _npcService.CreateItem(smith);
                 }
                 Console.WriteLine(smith.Name);
@@ -145,18 +146,17 @@ namespace Diablo2Console.App.Managers
                     }
                 }
             }
-            else if(charInNewPosition == 'h')
+            else if (charInNewPosition == 'h')
             {
-                var currentLevel = _levelService.GetAllItems().Where(x => x.CurrentlyPlaying == true).FirstOrDefault();
-                var healer = _npcService.GetAllItems().Where(x => x.Type == "Healer" && x.LevelId == currentLevel.Id).FirstOrDefault();
+                var healer = _npcService.GetAllItems().Where(x => x.Type == "Healer" && x.LevelId == level.Id).FirstOrDefault();
                 if (healer == null)
                 {
                     string healerName = "";
-                    if (currentLevel.Name == "Level1")
+                    if (level.Name == "Level1")
                     {
                         healerName = "Akara";
                     }
-                    healer = new Npc(_npcService.GetNextId(), healerName, "Healer", currentLevel.Id);
+                    healer = new Npc(_npcService.GetNextId(), healerName, "Healer", level.Id);
                     _npcService.CreateItem(healer);
                 }
 
@@ -172,9 +172,9 @@ namespace Diablo2Console.App.Managers
                         Console.WriteLine("Enter - Continue playing");
 
                         bool readingTask = true;
-                        while(readingTask)
+                        while (readingTask)
                         {
-                            if(Console.ReadKey().Key == ConsoleKey.Enter)
+                            if (Console.ReadKey().Key == ConsoleKey.Enter)
                             {
                                 readingTask = false;
                             }
@@ -192,6 +192,7 @@ namespace Diablo2Console.App.Managers
                         switch (keyOperation.Key)
                         {
                             case ConsoleKey.H:
+                                player.Health = PlayerService.PlayerBasicHealth;
                                 Console.WriteLine(healer.SpokenLines["Heal"]);
                                 keyOperation = Console.ReadKey(true);
                                 break;
@@ -214,14 +215,127 @@ namespace Diablo2Console.App.Managers
                 UpdatePlayersMap();
                 DrawPlayerMap();
             }
+            else if (charInNewPosition == 'f' || charInNewPosition == 'F')
+            {
+                MonsterEncounter(charInNewPosition, level, player, newPlayerPositionX, newPlayerPositionY);
+            }
             else
             {
                 UpdatePlayersMap();
                 DrawPlayerMap();
             }
         }
+        private void MonsterEncounter(char charInNewPosition, Level level, Player player, int newPlayerPositionX, int newPlayerPositionY)
+        {
+            if (GetMonsterInfo(charInNewPosition, level))
+            {
+                FightWithMonster(charInNewPosition, level, player, newPlayerPositionX, newPlayerPositionY);
+            }
+            else
+            {
+                DrawPlayerMap();
+            }
+        }
+        private bool GetMonsterInfo(char monsterMapSymbol, Level level)
+        {
+            var monster = _monsterService.GetAllItems().Where(x => x.MapSymbol == monsterMapSymbol && x.LevelIdsAppearance.Contains(level.Name)).FirstOrDefault();
 
+            Console.WriteLine($"Monster name: {monster.Name}");
+            Console.WriteLine($"Monster health: {monster.Health}");
+            Console.WriteLine($"Monster minimal damage: {monster.MinDamage}");
+            Console.WriteLine($"Monster maximal damage: {monster.MaxDamage}");
 
+            _actionMenuService.PrintMenu(_actionMenuService.GetMenuActionByGroup("MonsterInfo"));
+            bool selecting = true;
+            while(selecting)
+            {
+                var keyOperation = Console.ReadKey(true);
+                switch (keyOperation.Key)
+                {
+                    case ConsoleKey.F:
+                        return true;
+                    case ConsoleKey.Escape:
+                        return false;
+                    default:
+                        Console.WriteLine("Wrong operation, choose another one.");
+                        selecting = true;
+                        break;
+                }
+            }
+
+            return false;
+        }
+        private void FightWithMonster(char monsterMapSymbol, Level level, Player player, int monsterPositionX, int monsterPositionY)
+        {
+            SetPlayerDamage(player);
+            SetPlayerArmor(player);
+            var monster = _monsterService.GetAllItems().Where(x => x.MapSymbol == monsterMapSymbol && x.LevelIdsAppearance.Contains(level.Name)).FirstOrDefault();
+
+            if(monster != null)
+            {                
+                int playerHealth = player.Health;
+                int monsterHealth = monster.Health;
+                bool fighting = true;
+
+                while(fighting)
+                {
+                    var rand = new Random();
+                    int monsterDamage = rand.Next(monster.MinDamage, monster.MaxDamage);
+                    int playerDamage = rand.Next(player.SummedMinDamage, player.SummedMaxDamage);
+                    Console.WriteLine($"Player health: {playerHealth}");
+                    Console.WriteLine($"Monster health: {monsterHealth}");
+
+                    _actionMenuService.PrintMenu(_actionMenuService.GetMenuActionByGroup("FightWithMonster"));
+                    var keyOperation = Console.ReadKey(true);
+                    switch(keyOperation.Key)
+                    {
+                        case ConsoleKey.A:
+                            monsterHealth -= playerDamage;
+                            if (monsterHealth <= 0)
+                            {
+                                fighting = false;
+                                player.PlayerMap[monsterPositionX, monsterPositionY] = ' ';
+                                level.Map[monsterPositionX, monsterPositionY] = ' ';
+                            }
+                            else
+                            {
+                                playerHealth = AttackPlayer(playerHealth, player, monsterDamage, level, out fighting);
+                            }
+                            break;
+                        case ConsoleKey.B:
+                            playerHealth = AttackPlayer(playerHealth, player, monsterDamage, level, out fighting);
+                            break;
+                        case ConsoleKey.R:
+                            fighting = false;
+                            break;
+                        default:
+                            Console.WriteLine("Wrong operation, choose another one.");
+                            break;
+                    }
+                }
+                player.Health = playerHealth;
+                DrawPlayerMap();
+            }
+        }
+        private int AttackPlayer(int playerHealth, Player player, int monsterDamage, Level level, out bool fighting)
+        {
+            playerHealth -= monsterDamage - (int)(0.1 * player.SummedArmor);
+            if (playerHealth <= 0)
+            {
+                int currentPlayerPostionX = player.PositionX;
+                int currentPlayerPostionY = player.PositionY;
+                ChangePlayerPosition(currentPlayerPostionX, currentPlayerPostionY, level.PlayerStartingPositionX, level.PlayerStartingPositionY);
+                player.PlayerMap[currentPlayerPostionX, currentPlayerPostionY] = ' ';
+                level.Map[currentPlayerPostionX, currentPlayerPostionY] = ' ';
+                fighting = false;
+
+                return PlayerService.PlayerBasicHealth;
+            }
+
+            fighting = true;
+
+            return playerHealth;
+        }
         public void ShowPlayerBag()
         {
             var player = _playerService.GetAllItems().FirstOrDefault();
@@ -235,6 +349,26 @@ namespace Diablo2Console.App.Managers
             }
             Console.WriteLine();
             _actionMenuService.PrintMenu(_actionMenuService.GetMenuActionByGroup("PlayerBag"));
+        }
+
+        public void SetPlayerDamage(Player player)
+        {
+            player.SummedMinDamage = 0;
+            player.SummedMaxDamage = 0;
+            foreach (OffensiveItem item in player.PlayerBag.Where(x => x.ItemType == "OffensiveItem"))
+            {
+                player.SummedMinDamage += item.MinDamage;
+                player.SummedMaxDamage += item.MaxDamage;
+            }
+        }
+
+        public void SetPlayerArmor(Player player)
+        {
+            player.SummedArmor = 0;
+            foreach (DefensiveItem item in player.PlayerBag.Where(x => x.ItemType == "DefensiveItem"))
+            {
+                player.SummedArmor += item.Armor;
+            }
         }
     }
 }

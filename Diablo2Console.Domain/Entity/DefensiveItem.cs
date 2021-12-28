@@ -8,12 +8,13 @@ namespace Diablo2Console.Domain.Entity
     public class DefensiveItem : Item
     {
         public int Armor { get; set; }
-
-        public DefensiveItem(string name, int durability, int armor)
+        public DefensiveItem() { }
+        public DefensiveItem(string name, int durability, int armor, string itemType)
         {
             Name = name;
             Durability = durability;
             Armor = armor;
+            ItemType = itemType;
         }
         public override void ShowItem()
         {

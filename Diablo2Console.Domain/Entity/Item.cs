@@ -9,6 +9,7 @@ namespace Diablo2Console.Domain.Entity
     {
         public string Name { get; set; }
         public int Durability { get; set; }
+        public string ItemType { get; set; }
 
         public virtual void ShowItem()
         {

@@ -9,12 +9,14 @@ namespace Diablo2Console.Domain.Entity
     {
         public int MinDamage { get; set; }
         public int MaxDamage { get; set; }
-        public OffensiveItem(string name, int durability, int minDamage, int maxDamage)
+        public OffensiveItem() { }
+        public OffensiveItem(string name, int durability, int minDamage, int maxDamage, string itemType)
         {
             Name = name;
             Durability = durability;
             MinDamage = minDamage;
             MaxDamage = maxDamage;
+            ItemType = itemType;
         }
         public override void ShowItem()
         {

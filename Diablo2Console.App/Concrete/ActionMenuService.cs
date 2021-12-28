@@ -41,6 +41,11 @@ namespace Diablo2Console.App.Concrete
             CreateItem(new ActionMenu(ConsoleKey.D3, "Hell", "Difficulty"));
             CreateItem(new ActionMenu(ConsoleKey.Escape, "Previous", "Difficulty"));
             CreateItem(new ActionMenu(ConsoleKey.Escape, "Close Bag", "PlayerBag"));
+            CreateItem(new ActionMenu(ConsoleKey.A, "Attack", "FightWithMonster"));
+            CreateItem(new ActionMenu(ConsoleKey.B, "Pass", "FightWithMonster"));
+            CreateItem(new ActionMenu(ConsoleKey.R, "Run", "FightWithMonster"));
+            CreateItem(new ActionMenu(ConsoleKey.F, "Fight", "MonsterInfo"));
+            CreateItem(new ActionMenu(ConsoleKey.Escape, "Get away", "MonsterInfo"));
         }
     }
 }

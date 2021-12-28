@@ -68,24 +68,5 @@ namespace Diablo2Console.App.Managers
 
             return resultArray;
         }
-        public List<int> GetPlayerPosition()
-        {
-            var level = _levelService.GetAllItems().FirstOrDefault(x => x.CurrentlyPlaying == true);
-            List<int> playerPosition = new List<int>();
-
-            for (int i = 0; i < level.Map.GetLength(0); i++)
-            {
-                for (int j = 0; j < level.Map.GetLength(1); j++)
-                {
-                    if (level.Map[i, j] == 'P')
-                    {
-                        playerPosition.Add(i);
-                        playerPosition.Add(j);
-                    }
-                }
-            }
-
-            return playerPosition;
-        }
     }
 }

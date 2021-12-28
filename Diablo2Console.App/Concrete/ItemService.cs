@@ -15,12 +15,12 @@ namespace Diablo2Console.App.Concrete
 
         private void Initialize()
         {
-            Items.Add(new DefensiveItem("Basic Armor", 30, 5));
-            Items.Add(new DefensiveItem("Basic Gloves", 10, 5));
-            Items.Add(new DefensiveItem("Basic Boots", 10, 5));
-            Items.Add(new DefensiveItem("Basic Helmet", 20, 5));
-            Items.Add(new DefensiveItem("Basic Shield", 20, 5));
-            Items.Add(new OffensiveItem("Basic Sword", 10, 1, 3));
+            Items.Add(new DefensiveItem("Basic Armor", 30, 5, "DefensiveItem"));
+            Items.Add(new DefensiveItem("Basic Gloves", 10, 5, "DefensiveItem"));
+            Items.Add(new DefensiveItem("Basic Boots", 10, 5, "DefensiveItem"));
+            Items.Add(new DefensiveItem("Basic Helmet", 20, 5, "DefensiveItem"));
+            Items.Add(new DefensiveItem("Basic Shield", 20, 5, "DefensiveItem"));
+            Items.Add(new OffensiveItem("Basic Sword", 10, 1, 3, "OffensiveItem"));
         }
     }
 }
