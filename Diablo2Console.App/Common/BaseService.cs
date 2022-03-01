@@ -54,5 +54,12 @@ namespace Diablo2Console.App.Common
 
             return entity.Id;
         }
+
+        public T GetItemById(int id)
+        {
+            var entity = Items.FirstOrDefault(x => x.Id == id);
+
+            return entity;
+        }
     }
 }

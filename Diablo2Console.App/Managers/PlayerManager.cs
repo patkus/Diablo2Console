@@ -1,4 +1,5 @@
-﻿using Diablo2Console.App.Concrete;
+﻿using Diablo2Console.App.Abstract;
+using Diablo2Console.App.Concrete;
 using Diablo2Console.Domain.Entity;
 using System;
 using System.Linq;
@@ -7,8 +8,8 @@ namespace Diablo2Console.App.Managers
 {
     public class PlayerManager
     {
-        private PlayerService _playerService;
-        private LevelService _levelService;
+        private IService<Player> _playerService;
+        private IService<Level> _levelService;
         private ActionMenuService _actionMenuService;
         private NpcService _npcService;
         private QuestService _questService;
@@ -16,7 +17,7 @@ namespace Diablo2Console.App.Managers
         private TaskFunctionService _taskFunctionService;
         private MonsterService _monsterService;
 
-        public PlayerManager(PlayerService playerService, LevelService levelService, ActionMenuService actionMenuService, MonsterService monsterService)
+        public PlayerManager(IService<Player> playerService, LevelService levelService, ActionMenuService actionMenuService, MonsterService monsterService)
         {
             _playerService = playerService;
             _levelService = levelService;
@@ -369,6 +370,16 @@ namespace Diablo2Console.App.Managers
             {
                 player.SummedArmor += item.Armor;
             }
+        }
+
+        public Player GetPlayerById(int id)
+        {
+            return _playerService.GetItemById(id);
+        }
+
+        public int GetNextPlayerId()
+        {
+            return _playerService.GetNextId();
         }
     }
 }

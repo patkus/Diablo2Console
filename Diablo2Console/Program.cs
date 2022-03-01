@@ -21,7 +21,7 @@ namespace Diablo2Console
                 ItemService itemService = new ItemService();
                 MonsterService monsterService = new MonsterService();
                 PlayerService playerService = new PlayerService(itemService);
-                Player player = new Player(PlayerService.PlayerBasicHealth);
+                Player player = new Player(playerService.GetNextId(), PlayerService.PlayerBasicHealth);
                 playerService.CreateItem(player);
 
                 actionMenuService.PrintMenu(mainMenu);

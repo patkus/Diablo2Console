@@ -14,8 +14,9 @@ namespace Diablo2Console.Domain.Entity
         public int SummedMaxDamage { get; set; }
         public int SummedArmor { get; set; }
 
-        public Player(int health)
+        public Player(int id, int health)
         {
+            Id = id;
             Health = health;
             PlayerBag = new List<Item>();
         }

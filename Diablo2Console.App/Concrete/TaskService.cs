@@ -21,8 +21,11 @@ namespace Diablo2Console.App.Concrete
         public void Initialize()
         {
             //First quest tasks
-            int questId = _questService.GetAllItems().Where(x => x.Name == "The Den of Evil").FirstOrDefault().Id;
-            CreateItem(new Task(GetNextId(), "Quest1Task1", "Speak to Akara.", questId, 1, true));
+            Quest quest = _questService.GetAllItems().Where(x => x.Name == "The Den of Evil").FirstOrDefault();
+            if (quest != null)
+            {
+                CreateItem(new Task(GetNextId(), "Quest1Task1", "Speak to Akara.", quest.Id, 1, true));
+            }
         }
 
         public void ActivateNextTaskOrFinishQuest(Task finishedTask)

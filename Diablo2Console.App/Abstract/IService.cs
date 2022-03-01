@@ -12,5 +12,7 @@ namespace Diablo2Console.App.Abstract
         int CreateItem(T item);
         int UpdateItem(T item);
         void RemoveItem(T item);
+        int GetNextId();
+        T GetItemById(int id);
     }
 }

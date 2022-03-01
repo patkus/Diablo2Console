@@ -19,8 +19,11 @@ namespace Diablo2Console.App.Concrete
         private void Initialize()
         {
             //First Act quests
-            int levelId = _levelService.GetAllItems().Where(x => x.Name == "Level1").FirstOrDefault().Id;
-            int questId = CreateItem(new Quest(GetNextId(), "The Den of Evil", levelId, 1, true));
+            Level level = _levelService.GetAllItems().Where(x => x.Name == "Level1").FirstOrDefault();
+            if(level != null)
+            {
+                int questId = CreateItem(new Quest(GetNextId(), "The Den of Evil", level.Id, 1, true));
+            }
         }
 
         public void ActivateNextQuest(Quest finishedQuest)

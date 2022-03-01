@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Diablo2Console.App.Abstract;
 using Diablo2Console.App.Concrete;
+using Diablo2Console.App.Helpers;
 using Diablo2Console.Domain.Entity;
 
 namespace Diablo2Console.App.Managers
 {
     public class LevelManager
     {
-        private LevelService _levelService;
+        private readonly IService<Level> _levelService;
 
         public LevelManager(LevelService levelService)
         {
@@ -37,36 +39,10 @@ namespace Diablo2Console.App.Managers
             }
 
             var levelId = _levelService.GetNextId();
-            Level level = new Level(levelId, levelName, JaggedIntoMultidimensionalArray(levelAsList.ToArray()));
+            Level level = new Level(levelId, levelName, Helper.JaggedIntoMultidimensionalArray(levelAsList.ToArray()));
             _levelService.CreateItem(level);
 
             return level.Id;
-        }
-        public char[,] JaggedIntoMultidimensionalArray(char[][] sourceArray)
-        {
-            int firstDim = sourceArray.Length;
-            int secondDim;
-
-            if (firstDim == 0)
-            {
-                secondDim = 0;
-            }
-            else
-            {
-                secondDim = sourceArray[0].Length;
-            }
-
-            char[,] resultArray = new char[firstDim, secondDim];
-
-            for (int i = 0; i < firstDim; i++)
-            {
-                for (int j = 0; j < secondDim; j++)
-                {
-                    resultArray[i, j] = sourceArray[i][j];
-                }
-            }
-
-            return resultArray;
         }
     }
 }

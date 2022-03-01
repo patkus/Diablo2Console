@@ -9,8 +9,9 @@ namespace Diablo2Console.Domain.Entity
     {
         public int Armor { get; set; }
         public DefensiveItem() { }
-        public DefensiveItem(string name, int durability, int armor, string itemType)
+        public DefensiveItem(int id, string name, int durability, int armor, string itemType)
         {
+            Id = id;
             Name = name;
             Durability = durability;
             Armor = armor;

@@ -20,8 +20,11 @@ namespace Diablo2Console.App.Concrete
 
         private void Initialize()
         {
-            int taskId = _taskService.GetAllItems().Where(x => x.Name == "Quest1Task1").FirstOrDefault().Id;
-            CreateItem(new TaskFunction(GetNextId(), taskId, "SpeakToAkara"));
+            Task task = _taskService.GetAllItems().Where(x => x.Name == "Quest1Task1").FirstOrDefault();
+            if (task != null)
+            { 
+                CreateItem(new TaskFunction(GetNextId(), task.Id, "SpeakToAkara"));
+            }
         }
 
         public void SpeakToAkara()
