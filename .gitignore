@@ -4,5 +4,7 @@ Diablo2Console/obj
 .vs
 Diablo2Console.App/bin
 Diablo2Console.Domain/bin
+Diablo2Console.Tests/bin
 Diablo2Console.Domain/obj
 Diablo2Console.App/obj
+Diablo2Console.Tests/obj
