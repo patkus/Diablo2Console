@@ -1,12 +1,11 @@
-using System;
-using Xunit;
-using Moq;
-using Diablo2Console.Domain.Entity;
 using Diablo2Console.App.Abstract;
-using Diablo2Console.App.Managers;
 using Diablo2Console.App.Concrete;
-using System.Linq;
+using Diablo2Console.App.Managers;
+using Diablo2Console.Domain.Entity;
+using Moq;
 using System.Collections.Generic;
+using System.Linq;
+using Xunit;
 
 namespace Diablo2Console.Tests
 {
@@ -57,39 +56,60 @@ namespace Diablo2Console.Tests
         }
 
         [Fact]
-        public void RemoveItemReturnsNullIfItemNotExistsInCollection()
+        public void RemoveItemValidCall()
         {
             //Arrange
-            Player player = new Player(1, 500);
+            Player playerToRemove = GetSampleData()[0];
             var mock = new Mock<IService<Player>>();
-            mock.Setup(s => s.GetAllItems()).Returns(new List<Player>());
+            mock.Setup(s => s.RemoveItem(playerToRemove));
 
             var playerService = mock.Object;
             //Act
-            playerService.CreateItem(player);
-            playerService.RemoveItem(player);
+            playerService.RemoveItem(playerToRemove);
             //Assert
-            Assert.Null(playerService.GetAllItems().FirstOrDefault(x => x.Id == 1));
+            mock.Verify(x => x.RemoveItem(playerToRemove), Times.Once());
         }
 
         [Fact]
-        public void GetAllItemsCollectionContainsAllItems()
+        public void GetAllItemsValidReturn()
         {
             //Arrange
-            Player player = new Player(1, 500);
-            Player player1 = new Player(2, 500);
-            Player player2 = new Player(3, 500);
+            var expectedOutcome = GetSampleData();
             var mock = new Mock<IService<Player>>();
-            mock.Setup(s => s.GetAllItems()).Returns(new List<Player>() { player, player1, player2 });
+            mock.Setup(s => s.GetAllItems()).Returns(GetSampleData());
+
+            var playerService = mock.Object;
+            //Act        
+            var actualOutcome = playerService.GetAllItems();
+            //Assert
+            Assert.NotNull(actualOutcome);
+            Assert.Equal(expectedOutcome.Count(), actualOutcome.Count());
+
+            for(int i = 0; i < expectedOutcome.Count(); i++)
+            {
+                Assert.Equal(expectedOutcome[i].Id, actualOutcome[i].Id);
+            }
+        }
+
+        [Fact]
+        public void UpdateItemValidCall()
+        {
+            //Arrange
+            Player currentPlayer = GetSampleData()[0];
+            
+            var mock = new Mock<IService<Player>>();
+            mock.Setup(s => s.UpdateItem(currentPlayer)).Returns(1);
 
             var playerService = mock.Object;
             //Act
-            playerService.CreateItem(player);
-            playerService.CreateItem(player1);
-            playerService.CreateItem(player2);
-            var allItems = playerService.GetAllItems();
+            playerService.UpdateItem(currentPlayer);
             //Assert
-            Assert.Equal(3, allItems.Count());
+            mock.Verify(x => x.UpdateItem(currentPlayer), Times.Once());
+        }
+
+        private List<Player> GetSampleData()
+        {
+            return new List<Player>() { new Player(1, 100), new Player(2, 200), new Player(3, 300) };
         }
     }
 }
