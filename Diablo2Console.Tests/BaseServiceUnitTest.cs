@@ -15,22 +15,22 @@ namespace Diablo2Console.Tests
         public void GetItemByIdReturnsProvidedItemsId()
         {
             //Arrange
-            Player player = new Player(1, 500);
+            Player currentPlayer = GetSampleData()[0];
             var mock = new Mock<IService<Player>>();
-            mock.Setup(s => s.GetItemById(1)).Returns(player);
+            mock.Setup(s => s.GetItemById(1)).Returns(currentPlayer);
 
             var playerManager = new PlayerManager(mock.Object, new LevelService(), new ActionMenuService(), new MonsterService());
             //Act
-            var returnedPlayer = playerManager.GetPlayerById(player.Id);
+            var returnedPlayer = playerManager.GetPlayerById(currentPlayer.Id);
             //Assert
-            Assert.Equal(player, returnedPlayer);
+            Assert.Equal(currentPlayer, returnedPlayer);
         }
         [Fact]
         public void GetNextIdReturnsNextItemsId()
         {
             //Arrange
-            Player player = new Player(1, 500);
-            Player nextPlayer = new Player(2, 500);
+            Player currentPlayer = GetSampleData()[0];
+            Player nextPlayer = GetSampleData()[1];
             var mock = new Mock<IService<Player>>();
             mock.Setup(s => s.GetNextId()).Returns(2);
 
@@ -44,15 +44,15 @@ namespace Diablo2Console.Tests
         public void CreateItemReturnsNewlyCreatedItemsId()
         {
             //Arrange
-            Player player = new Player(1, 500);
+            Player currentPlayer = GetSampleData()[0];
             var mock = new Mock<IService<Player>>();
-            mock.Setup(s => s.CreateItem(player)).Returns(1);
+            mock.Setup(s => s.CreateItem(currentPlayer)).Returns(1);
 
-            var playerService = mock.Object;
+            var playerManager = new PlayerManager(mock.Object, new LevelService(), new ActionMenuService(), new MonsterService()); 
             //Act
-            var returnedPlayer = playerService.CreateItem(player);
+            var returnedPlayer = playerManager.CreatePlayer(currentPlayer);
             //Assert
-            Assert.Equal(player.Id, returnedPlayer);
+            Assert.Equal(currentPlayer.Id, returnedPlayer);
         }
 
         [Fact]
@@ -63,9 +63,9 @@ namespace Diablo2Console.Tests
             var mock = new Mock<IService<Player>>();
             mock.Setup(s => s.RemoveItem(playerToRemove));
 
-            var playerService = mock.Object;
+            var playerManager = new PlayerManager(mock.Object, new LevelService(), new ActionMenuService(), new MonsterService());
             //Act
-            playerService.RemoveItem(playerToRemove);
+            playerManager.RemovePlayer(playerToRemove);
             //Assert
             mock.Verify(x => x.RemoveItem(playerToRemove), Times.Once());
         }
@@ -78,9 +78,9 @@ namespace Diablo2Console.Tests
             var mock = new Mock<IService<Player>>();
             mock.Setup(s => s.GetAllItems()).Returns(GetSampleData());
 
-            var playerService = mock.Object;
+            var playerManager = new PlayerManager(mock.Object, new LevelService(), new ActionMenuService(), new MonsterService());
             //Act        
-            var actualOutcome = playerService.GetAllItems();
+            var actualOutcome = playerManager.GetAllPlayers();
             //Assert
             Assert.NotNull(actualOutcome);
             Assert.Equal(expectedOutcome.Count(), actualOutcome.Count());
@@ -100,11 +100,11 @@ namespace Diablo2Console.Tests
             var mock = new Mock<IService<Player>>();
             mock.Setup(s => s.UpdateItem(currentPlayer)).Returns(1);
 
-            var playerService = mock.Object;
+            var playerManager = new PlayerManager(mock.Object, new LevelService(), new ActionMenuService(), new MonsterService());
             //Act
-            playerService.UpdateItem(currentPlayer);
+            var playerId = playerManager.UpdatePlayer(currentPlayer);
             //Assert
-            mock.Verify(x => x.UpdateItem(currentPlayer), Times.Once());
+            Assert.Equal(playerId, currentPlayer.Id);
         }
 
         private List<Player> GetSampleData()

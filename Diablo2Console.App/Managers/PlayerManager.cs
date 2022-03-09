@@ -2,6 +2,7 @@
 using Diablo2Console.App.Concrete;
 using Diablo2Console.Domain.Entity;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Diablo2Console.App.Managers
@@ -380,6 +381,26 @@ namespace Diablo2Console.App.Managers
         public int GetNextPlayerId()
         {
             return _playerService.GetNextId();
+        }
+
+        public int CreatePlayer(Player newPlayer)
+        {
+            return _playerService.CreateItem(newPlayer);
+        }
+
+        public void RemovePlayer(Player player)
+        {
+            _playerService.RemoveItem(player);
+        }
+
+        public List<Player> GetAllPlayers()
+        {
+            return _playerService.GetAllItems();
+        }
+
+        public int UpdatePlayer(Player player)
+        {
+            return _playerService.UpdateItem(player);
         }
     }
 }
