@@ -3,6 +3,7 @@ using Diablo2Console.App.Concrete;
 using Diablo2Console.Domain.Entity;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Diablo2Console.App.Managers
@@ -401,6 +402,81 @@ namespace Diablo2Console.App.Managers
         public int UpdatePlayer(Player player)
         {
             return _playerService.UpdateItem(player);
+        }
+
+        public void ShowPlayerBagProcess()
+        {
+            ShowPlayerBag();
+            bool showingPlayerBag = true;
+
+            var keyOperation = Console.ReadKey(true);
+
+            while (showingPlayerBag)
+            {
+                switch (keyOperation.Key)
+                {
+                    case ConsoleKey.Escape:
+                        Console.Clear();
+                        showingPlayerBag = false;
+                        DrawPlayerMap();
+                        break;
+                    default:
+                        Console.WriteLine("Wrong operation, choose another one.");
+                        break;
+                }
+
+                keyOperation = Console.ReadKey(true);
+            }
+        }
+
+        public void PlayLevel(Player player, int oldPlayerPositionX, int oldPlayerPositionY)
+        {
+            bool playingLevel = true;
+            var keyOperation = Console.ReadKey(true);
+
+            while (playingLevel)
+            {
+                oldPlayerPositionX = player.PositionX;
+                oldPlayerPositionY = player.PositionY;
+
+                switch (keyOperation.Key)
+                {
+                    case ConsoleKey.RightArrow:
+                        ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, oldPlayerPositionX, ++oldPlayerPositionY);
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, oldPlayerPositionX, --oldPlayerPositionY);
+                        break;
+                    case ConsoleKey.UpArrow:
+                        ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, --oldPlayerPositionX, oldPlayerPositionY);
+                        break;
+                    case ConsoleKey.DownArrow:
+                        ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, ++oldPlayerPositionX, oldPlayerPositionY);
+                        break;
+                    case ConsoleKey.I:
+                        ShowPlayerBagProcess();
+                        break;
+                    case ConsoleKey.S:
+                        SaveGame(player);
+                        break;
+                    case ConsoleKey.Escape:
+                        playingLevel = false;
+                        Console.Clear();
+                        break;
+                    default:
+                        Console.WriteLine("Wrong operation, choose another one.");
+                        break;
+                }
+                keyOperation = Console.ReadKey(true);
+            }
+        }
+
+        private void SaveGame(Player player)
+        {
+            string saveFilePath = @"../../../files/Save/";
+
+            Helpers.Helper.WriteToXml(saveFilePath, "PlayerBagDefensiveItem.xml", player.PlayerBag.Where(x => x.ItemType == "DefensiveItem").Cast<DefensiveItem>().ToList());
+            Helpers.Helper.WriteToXml(saveFilePath, "PlayerBagOffensiveItem.xml", player.PlayerBag.Where(x => x.ItemType == "OffensiveItem").Cast<OffensiveItem>().ToList());
         }
     }
 }

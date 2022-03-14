@@ -18,17 +18,14 @@ namespace Diablo2Console
             {
                 ActionMenuService actionMenuService = new ActionMenuService();
                 var mainMenu = actionMenuService.GetMenuActionByGroup("Main");
-                ItemService itemService = new ItemService();
+                
                 MonsterService monsterService = new MonsterService();
+                ItemService itemService = new ItemService();
                 PlayerService playerService = new PlayerService(itemService);
-                Player player = new Player(playerService.GetNextId(), PlayerService.PlayerBasicHealth);
-                playerService.CreateItem(player);
+                Player player = new Player(playerService.GetNextId(), PlayerService.PlayerBasicHealth); 
 
                 actionMenuService.PrintMenu(mainMenu);
                 Console.WriteLine();
-
-                int oldPlayerPositionX;
-                int oldPlayerPositionY;
 
                 LevelService levelService = new LevelService();
                 LevelManager levelManager = new LevelManager(levelService);
@@ -38,99 +35,12 @@ namespace Diablo2Console
                 switch (keyOperation.Key)
                 {
                     case ConsoleKey.Enter:
-                        var difficultyMenu = actionMenuService.GetMenuActionByGroup("Difficulty");
-                        actionMenuService.PrintMenu(difficultyMenu);
-                        keyOperation = Console.ReadKey(true);
-
-                        bool selectingDifficulty = true;
-
-                        while (selectingDifficulty)
-                        {
-                            if (keyOperation.Key == ConsoleKey.D1)
-                            {
-                                var newLevelId = levelManager.AddNewLevel("Level1");
-                                PlayerManager playerManager = new PlayerManager(playerService, levelService, actionMenuService, monsterService);
-
-                                if (newLevelId != -1)
-                                {
-                                    var playerPosition = levelService.GetPlayerPosition();
-                                    if (playerPosition.Count > 0)
-                                    {
-                                        player.PositionX = playerPosition[0];
-                                        player.PositionY = playerPosition[1];
-                                       
-                                        playerManager.SetStartingMapForPlayer();
-                                        playerManager.DrawPlayerMap();
-                                    }
-                                }
-                                selectingDifficulty = false;
-
-                                bool playingLevel = true;
-
-                                while(playingLevel)
-                                {
-                                    keyOperation = Console.ReadKey(true);
-
-                                    oldPlayerPositionX = player.PositionX;
-                                    oldPlayerPositionY = player.PositionY;
-
-                                    switch (keyOperation.Key)
-                                    {
-                                        case ConsoleKey.RightArrow:
-                                            playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, oldPlayerPositionX, ++oldPlayerPositionY);
-                                            break;
-                                        case ConsoleKey.LeftArrow:
-                                            playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, oldPlayerPositionX, --oldPlayerPositionY);
-                                            break;
-                                        case ConsoleKey.UpArrow:
-                                            playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, --oldPlayerPositionX, oldPlayerPositionY);
-                                            break;
-                                        case ConsoleKey.DownArrow:
-                                            playerManager.ChangePlayerPosition(oldPlayerPositionX, oldPlayerPositionY, ++oldPlayerPositionX, oldPlayerPositionY);
-                                            break;
-                                        case ConsoleKey.I:
-                                            playerManager.ShowPlayerBag();
-                                            
-                                            bool showingPlayerBag = true;
-
-                                            while(showingPlayerBag)
-                                            {
-                                                keyOperation = Console.ReadKey(true);
-
-                                                switch(keyOperation.Key)
-                                                {
-                                                    case ConsoleKey.Escape:
-                                                        Console.Clear();
-                                                        showingPlayerBag = false;
-                                                        playerManager.DrawPlayerMap();
-                                                        break;
-                                                    default:
-                                                        Console.WriteLine("Wrong operation, choose another one.");
-                                                        break;
-                                                }
-                                            }
-                                            break;
-                                        case ConsoleKey.Escape:
-                                            playingLevel = false;
-                                            Console.Clear();
-                                            break;
-                                        default:
-                                            Console.WriteLine("Wrong operation, choose another one.");
-                                            break;
-                                    }
-                                }
-                            }
-                            else if (keyOperation.Key == ConsoleKey.Escape)
-                            {
-                                selectingDifficulty = false;
-                            }
-                            else
-                            {
-                                Console.WriteLine();
-                                Console.WriteLine("Wrong operation, choose another one.");
-                                keyOperation = Console.ReadKey(true);
-                            }
-                        }
+                        playerService.CreateItem(player);
+                        SelectDifficulty(actionMenuService, monsterService, playerService, player, levelService, levelManager);
+                        break;
+                    case ConsoleKey.L:
+                        playerService.LoadItem(player);
+                        SelectDifficulty(actionMenuService, monsterService, playerService, player, levelService, levelManager);
                         break;
                     case ConsoleKey.Escape:
                         playing = false;
@@ -140,6 +50,56 @@ namespace Diablo2Console
                         break;
                 }
             }
+        }
+
+        private static void SelectDifficulty(ActionMenuService actionMenuService, MonsterService monsterService, PlayerService playerService, Player player, LevelService levelService, LevelManager levelManager)
+        {
+            var difficultyMenu = actionMenuService.GetMenuActionByGroup("Difficulty");
+            actionMenuService.PrintMenu(difficultyMenu);
+            ConsoleKeyInfo keyOperation = Console.ReadKey(true);
+            bool selectingDifficulty = true;
+
+            while (selectingDifficulty)
+            {
+                if (keyOperation.Key == ConsoleKey.D1)
+                {
+                    var playerManager = InitializeLevelAndPlayer(actionMenuService, monsterService, playerService, player, levelService, levelManager);
+                    selectingDifficulty = false;
+
+                    playerManager.PlayLevel(player, player.PositionX, player.PositionY);
+                }
+                else if (keyOperation.Key == ConsoleKey.Escape)
+                {
+                    selectingDifficulty = false;
+                }
+                else
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Wrong operation, choose another one.");
+                    keyOperation = Console.ReadKey(true);
+                }
+            }
+        }
+
+        private static PlayerManager InitializeLevelAndPlayer(ActionMenuService actionMenuService, MonsterService monsterService, PlayerService playerService, Player player, LevelService levelService, LevelManager levelManager)
+        {
+            var newLevelId = levelManager.AddNewLevel("Level1");
+            PlayerManager playerManager = new PlayerManager(playerService, levelService, actionMenuService, monsterService);
+
+            if (newLevelId != -1)
+            {
+                var playerPosition = levelService.GetPlayerPosition();
+                if (playerPosition.Count > 0)
+                {
+                    player.PositionX = playerPosition[0];
+                    player.PositionY = playerPosition[1];
+
+                    playerManager.SetStartingMapForPlayer();
+                    playerManager.DrawPlayerMap();
+                }
+            }
+
+            return playerManager;
         }
     }
 }

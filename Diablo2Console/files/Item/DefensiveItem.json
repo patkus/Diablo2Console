@@ -1,0 +1,32 @@
+[
+  {
+    "Name": "Basic Armor",
+    "Armor": 50,
+    "Durability": 30,
+    "ItemType": "DefensiveItem"
+  },
+  {
+    "Name": "Basic Shield",
+    "Armor": 40,
+    "Durability": 30,
+    "ItemType": "DefensiveItem"
+  },
+  {
+    "Name": "Basic Boots",
+    "Armor": 10,
+    "Durability": 5,
+    "ItemType": "DefensiveItem"
+  },
+  {
+    "Name": "Basic Gloves",
+    "Armor": 10,
+    "Durability": 5,
+    "ItemType": "DefensiveItem"
+  },
+  {
+    "Name": "Basic Helmet",
+    "Armor": 15,
+    "Durability": 15,
+    "ItemType": "DefensiveItem"
+  }
+]

@@ -33,7 +33,8 @@ namespace Diablo2Console.App.Concrete
         }
         private void Initialize()
         {
-            CreateItem(new ActionMenu(ConsoleKey.Enter, "Start game", "Main"));
+            CreateItem(new ActionMenu(ConsoleKey.Enter, "New game", "Main"));
+            CreateItem(new ActionMenu(ConsoleKey.L, "Load game", "Main"));
             CreateItem(new ActionMenu(ConsoleKey.S, "Top scores", "Main"));
             CreateItem(new ActionMenu(ConsoleKey.Escape, "Exit", "Main"));
             CreateItem(new ActionMenu(ConsoleKey.D1, "Normal", "Difficulty"));

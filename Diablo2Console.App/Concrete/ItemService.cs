@@ -3,6 +3,8 @@ using Diablo2Console.Domain.Entity;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace Diablo2Console.App.Concrete
 {
@@ -15,12 +17,19 @@ namespace Diablo2Console.App.Concrete
 
         private void Initialize()
         {
-            Items.Add(new DefensiveItem(GetNextId(), "Basic Armor", 30, 5, "DefensiveItem"));
-            Items.Add(new DefensiveItem(GetNextId(), "Basic Gloves", 10, 5, "DefensiveItem"));
-            Items.Add(new DefensiveItem(GetNextId(), "Basic Boots", 10, 5, "DefensiveItem"));
-            Items.Add(new DefensiveItem(GetNextId(), "Basic Helmet", 20, 5, "DefensiveItem"));
-            Items.Add(new DefensiveItem(GetNextId(), "Basic Shield", 20, 5, "DefensiveItem"));
-            Items.Add(new OffensiveItem(GetNextId(), "Basic Sword", 10, 1, 3, "OffensiveItem"));
+            var hostPath = $"../../../files/Item";
+            var filePath = $"{hostPath}/DefensiveItem.json";
+            foreach (var defensiveItem in JsonConvert.DeserializeObject<List<DefensiveItem>>(Helpers.Helper.ReadFromJson(filePath)))
+            {
+                defensiveItem.Id = GetNextId();
+                CreateItem(defensiveItem);
+            }
+            filePath = $"{hostPath}/OffensiveItem.json";
+            foreach (var offensiveItem in JsonConvert.DeserializeObject<List<OffensiveItem>>(Helpers.Helper.ReadFromJson(filePath)))
+            {
+                offensiveItem.Id = GetNextId();
+                CreateItem(offensiveItem);
+            }
         }
     }
 }

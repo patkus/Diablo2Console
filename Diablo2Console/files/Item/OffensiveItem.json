@@ -1,0 +1,23 @@
+[
+  {
+    "Name": "Basic Sword",
+    "MinDamage": 2,
+    "MaxDamage": 4,
+    "Durability": 30,
+    "ItemType": "OffensiveItem"
+  },
+  {
+    "Name": "Basic Axe",
+    "MinDamage": 2,
+    "MaxDamage": 3,
+    "Durability": 40,
+    "ItemType": "OffensiveItem"
+  },
+  {
+    "Name": "Basic Hammer",
+    "MinDamage": 1,
+    "MaxDamage": 6,
+    "Durability": 50,
+    "ItemType": "OffensiveItem"
+  }
+]
