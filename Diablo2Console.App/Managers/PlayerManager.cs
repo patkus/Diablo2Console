@@ -92,6 +92,24 @@ namespace Diablo2Console.App.Managers
                 }
             }
         }
+        public List<int> GetPlayerPosition(char[,] map)
+        {
+            List<int> playerPosition = new List<int>();
+
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    if (map[i, j] == 'P')
+                    {
+                        playerPosition.Add(i);
+                        playerPosition.Add(j);
+                    }
+                }
+            }
+
+            return playerPosition;
+        }
         public void ChangePlayerPosition(int oldPlayerPositionX, int oldPlayerPositionY, int newPlayerPositionX, int newPlayerPositionY)
         {
             var player = _playerService.GetAllItems().FirstOrDefault();
@@ -250,7 +268,7 @@ namespace Diablo2Console.App.Managers
 
             _actionMenuService.PrintMenu(_actionMenuService.GetMenuActionByGroup("MonsterInfo"));
             bool selecting = true;
-            while(selecting)
+            while (selecting)
             {
                 var keyOperation = Console.ReadKey(true);
                 switch (keyOperation.Key)
@@ -274,13 +292,13 @@ namespace Diablo2Console.App.Managers
             SetPlayerArmor(player);
             var monster = _monsterService.GetAllItems().Where(x => x.MapSymbol == monsterMapSymbol && x.LevelIdsAppearance.Contains(level.Name)).FirstOrDefault();
 
-            if(monster != null)
-            {                
+            if (monster != null)
+            {
                 int playerHealth = player.Health;
                 int monsterHealth = monster.Health;
                 bool fighting = true;
 
-                while(fighting)
+                while (fighting)
                 {
                     var rand = new Random();
                     int monsterDamage = rand.Next(monster.MinDamage, monster.MaxDamage);
@@ -290,7 +308,7 @@ namespace Diablo2Console.App.Managers
 
                     _actionMenuService.PrintMenu(_actionMenuService.GetMenuActionByGroup("FightWithMonster"));
                     var keyOperation = Console.ReadKey(true);
-                    switch(keyOperation.Key)
+                    switch (keyOperation.Key)
                     {
                         case ConsoleKey.A:
                             monsterHealth -= playerDamage;
@@ -348,7 +366,7 @@ namespace Diablo2Console.App.Managers
             {
                 Console.WriteLine("Bag: ");
                 Console.WriteLine();
-                item.ShowItem();              
+                item.ShowItem();
             }
             Console.WriteLine();
             _actionMenuService.PrintMenu(_actionMenuService.GetMenuActionByGroup("PlayerBag"));
@@ -477,6 +495,35 @@ namespace Diablo2Console.App.Managers
 
             Helpers.Helper.WriteToXml(saveFilePath, "PlayerBagDefensiveItem.xml", player.PlayerBag.Where(x => x.ItemType == "DefensiveItem").Cast<DefensiveItem>().ToList());
             Helpers.Helper.WriteToXml(saveFilePath, "PlayerBagOffensiveItem.xml", player.PlayerBag.Where(x => x.ItemType == "OffensiveItem").Cast<OffensiveItem>().ToList());
+
+            WritePlayerMapToTxt(player.PlayerMap);
+        }
+
+        private void WritePlayerMapToTxt(char[,] playerMap)
+        {
+            string directory = @"../../../files/Save/";
+            string filePath = "PlayerMap.txt";
+
+            Helpers.Helper.CheckFileWriteDestination(directory, filePath);
+
+            using FileStream fs = File.OpenWrite(directory + filePath);
+            using StreamWriter sw = new StreamWriter(fs);
+
+            for (int i = 0; i < playerMap.GetLength(0); i++)
+            {
+                string line = string.Empty;
+                for (int j = 0; j < playerMap.GetLength(1); j++)
+                {
+                    char currentChar = playerMap[i, j];
+                    if(string.IsNullOrEmpty(currentChar.ToString()))
+                    {
+                        currentChar = ' ';
+                    }
+
+                    line += currentChar;
+                }
+                sw.WriteLine(line);
+            }
         }
     }
 }

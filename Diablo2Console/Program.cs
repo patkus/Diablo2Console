@@ -2,6 +2,8 @@
 using Diablo2Console.App.Managers;
 using Diablo2Console.Domain.Entity;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Diablo2Console
 {
@@ -40,7 +42,8 @@ namespace Diablo2Console
                         break;
                     case ConsoleKey.L:
                         playerService.LoadItem(player);
-                        SelectDifficulty(actionMenuService, monsterService, playerService, player, levelService, levelManager);
+                        var playerManager = InitializeLevelAndPlayer(actionMenuService, monsterService, playerService, player, levelService, levelManager);
+                        playerManager.PlayLevel(player, player.PositionX, player.PositionY);
                         break;
                     case ConsoleKey.Escape:
                         playing = false;
@@ -83,21 +86,35 @@ namespace Diablo2Console
 
         private static PlayerManager InitializeLevelAndPlayer(ActionMenuService actionMenuService, MonsterService monsterService, PlayerService playerService, Player player, LevelService levelService, LevelManager levelManager)
         {
-            var newLevelId = levelManager.AddNewLevel("Level1");
             PlayerManager playerManager = new PlayerManager(playerService, levelService, actionMenuService, monsterService);
+            var newLevelId = levelManager.AddNewLevel("Level1");
+            var playerPosition = new List<int>();
 
-            if (newLevelId != -1)
+            if (player.PlayerMap is null)
             {
-                var playerPosition = levelService.GetPlayerPosition();
+                if (newLevelId != -1)
+                {
+                    var levelMap = levelService.GetAllItems().Where(x => x.CurrentlyPlaying == true).FirstOrDefault();
+                    playerPosition = playerManager.GetPlayerPosition(levelMap.Map);
+                    if (playerPosition.Count > 0)
+                    {
+                        player.PositionX = playerPosition[0];
+                        player.PositionY = playerPosition[1];
+                        playerManager.SetStartingMapForPlayer();
+                    }
+                }
+            }
+            else
+            {
+                playerPosition = playerManager.GetPlayerPosition(player.PlayerMap);
                 if (playerPosition.Count > 0)
                 {
                     player.PositionX = playerPosition[0];
                     player.PositionY = playerPosition[1];
-
-                    playerManager.SetStartingMapForPlayer();
-                    playerManager.DrawPlayerMap();
                 }
             }
+            
+            playerManager.DrawPlayerMap();
 
             return playerManager;
         }

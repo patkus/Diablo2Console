@@ -44,15 +44,7 @@ namespace Diablo2Console.App.Helpers
 
         public static void WriteToXml<T>(string directory, string filePath, List<T> itemList)
         {
-            if(File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
-            else
-            {
-                Directory.CreateDirectory(directory);
-                File.Create(directory + filePath).Dispose();
-            }
+            CheckFileWriteDestination(directory, filePath);
 
             XmlRootAttribute root = new XmlRootAttribute
             {
@@ -78,6 +70,19 @@ namespace Diablo2Console.App.Helpers
             var xmlItems = (List<T>)xmlSerializer.Deserialize(sr);
 
             return xmlItems;
+        }
+
+        public static void CheckFileWriteDestination(string directory, string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+            else
+            {
+                Directory.CreateDirectory(directory);
+                File.Create(directory + filePath).Dispose();
+            }
         }
     }
 }

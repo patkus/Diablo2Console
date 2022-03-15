@@ -1,5 +1,6 @@
 ﻿using Diablo2Console.App.Common;
 using Diablo2Console.Domain.Entity;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -20,7 +21,7 @@ namespace Diablo2Console.App.Concrete
             Initialize(newPlayer);
 
             return newPlayerId;
-        } 
+        }
 
         public int LoadItem(Player newPlayer)
         {
@@ -58,6 +59,19 @@ namespace Diablo2Console.App.Concrete
                 {
                     player.PlayerBag.Add(offensiveItem);
                 }
+            }
+            filePath = @"../../../files/Save/PlayerMap.txt";
+            if (File.Exists(filePath))
+            {
+                List<char[]> levelAsList = new List<char[]>();
+                string[] fileInLines = File.ReadAllLines(filePath);
+
+                foreach (var textLine in fileInLines)
+                {
+                    levelAsList.Add(textLine.ToCharArray());
+                }
+
+                player.PlayerMap = Helpers.Helper.JaggedIntoMultidimensionalArray(levelAsList.ToArray());
             }
         }
     }
